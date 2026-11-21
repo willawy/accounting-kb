@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会计知识库 · 搜索</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="ai.css">
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ======== 左侧导航 ======== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>会计知识库</h1>
+      <p class="brand-sub">政策 · 指南 · 税务 · 案例 · 问答</p>
+    </div>
+
+    <nav id="nav">
+      <button class="nav-item active" data-cat="all">全部 <span class="count" id="count-all"></span></button>
+
+      <button class="nav-group" data-group="policy" data-label="会计政策" aria-expanded="true" title="展开 / 折叠会计政策子栏目">
+        <span class="nav-group-label">会计政策</span><span class="nav-group-current"></span><span class="nav-group-arrow">▾</span>
+      </button>
+      <button class="nav-item sub" data-group="policy" data-cat="cas">中国企业会计准则 <span class="count" id="count-cas"></span></button>
+      <button class="nav-item sub" data-group="policy" data-cat="ifrs">IFRS（国际准则） <span class="count" id="count-ifrs"></span></button>
+      <button class="nav-item sub" data-group="policy" data-cat="usgaap">US GAAP（美国准则） <span class="count" id="count-usgaap"></span></button>
+
+      <button class="nav-item" data-cat="guide">会计准则应用指南 <span class="count" id="count-guide"></span></button>
+      <button class="nav-item" data-cat="tax">税务专区 <span class="count" id="count-tax"></span></button>
+      <button class="nav-item" data-cat="faq">会计处理 · 常见问题库 <span class="count" id="count-faq"></span></button>
+
+      <button class="nav-group" data-group="reg" data-label="监管与合规" aria-expanded="true" title="展开 / 折叠监管与合规子栏目">
+        <span class="nav-group-label">监管与合规</span><span class="nav-group-current"></span><span class="nav-group-arrow">▾</span>
+      </button>
+      <button class="nav-item sub" data-group="reg" data-cat="listing">上市监管与披露 <span class="count" id="count-listing"></span></button>
+      <button class="nav-item sub" data-group="reg" data-cat="case">监管处罚案例 <span class="count" id="count-case"></span></button>
+      <button class="nav-item sub" data-group="reg" data-cat="weekly">监管周报 <span class="count" id="count-weekly"></span></button>
+
+      <button class="nav-item" data-cat="industry">行业与财报分析 <span class="count" id="count-industry"></span></button>
+    </nav>
+
+    <div class="sidebar-ai">
+      <button id="aiEntryBtn" class="ai-entry-btn">AI 问答 · Beta <span>基于本站知识库</span></button>
+    </div>
+
+    <div class="sidebar-foot">
+      <p>内容来源：财政部 · 证监会 · 交易所 · 税务总局 · 会计视野（陈版主答疑摘录）</p>
+      <p>每条均注明官方出处。每周持续更新。</p>
+    </div>
+  </aside>
+
+  <div class="resizer" data-side="left" title="拖动调整左侧导航宽度" role="separator" aria-orientation="vertical"></div>
+
+  <!-- ======== 主内容区 ======== -->
+  <main class="main">
+
+    <div class="searchbar">
+      <div class="search-input-wrap">
+        <input type="search" id="searchInput" placeholder="输入关键词，如：收入确认 / 资金占用 / 解释第20号 / 增值税 …" autocomplete="off">
+        <kbd class="kbd-hint" title="按 Ctrl+K 快速定位搜索框">Ctrl K</kbd>
+      </div>
+      <span id="resultInfo" class="result-info"></span>
+    </div>
+
+    <div id="statsPanel" class="stats-panel"></div>
+
+    <div id="scenePanel" class="scene-panel"></div>
+
+    <div id="content" class="content"><!-- 条目卡片由 script.js 渲染 --></div>
+
+    <footer class="footer">
+      <p>本站内容仅为工作参考，正式依据请以官方文件原文为准。陈版主答疑内容为摘要+原帖链接，版权归原作者。</p>
+    </footer>
+
+  </main>
+
+  <div class="resizer" data-side="right" title="拖动调整右侧目录宽度" role="separator" aria-orientation="vertical"></div>
+
+  <!-- ======== 右侧本页目录（条目多时自动出现） ======== -->
+  <aside id="tocPanel" class="toc-panel"></aside>
+
+</div>
+
+<!-- ======== AI 问答面板 ======== -->
+<div id="aiDrawer" class="ai-drawer" aria-hidden="true">
+  <div class="ai-head">
+    <div>
+      <strong>AI 问答</strong>
+      <span class="ai-sub">先检索本站知识库，再让模型据以作答</span>
+    </div>
+    <div class="ai-head-actions">
+      <button id="aiSettingsBtn" class="ai-icon-btn" title="设置">设置</button>
+      <button id="aiCloseBtn" class="ai-icon-btn" title="关闭">×</button>
+    </div>
+  </div>
+
+  <div id="aiSettings" class="ai-settings" hidden>
+    <label>调用方式
+      <select id="aiMode">
+        <option value="proxy">本地代理（演示推荐）</option>
+        <option value="direct">直连 API（线上自行配置）</option>
+      </select>
+    </label>
+    <div id="aiDirectFields" hidden>
+      <label>API 地址（OpenAI 兼容，填到 /v1）
+        <input id="aiBase" type="text" placeholder="https://api.deepseek.com/v1" autocomplete="off">
+      </label>
+      <label>API Key（只存本机浏览器，不入库）
+        <input id="aiKey" type="password" placeholder="sk-..." autocomplete="off">
+      </label>
+      <label>模型名
+        <input id="aiModel" type="text" placeholder="deepseek-chat" autocomplete="off">
+      </label>
+    </div>
+    <p class="ai-tip">密钥不会写进网站代码、也不会随网站发布。直连若被浏览器拦截（CORS），请改用本地代理或公司内网网关地址。</p>
+    <div class="ai-settings-actions">
+      <button id="aiSaveBtn" class="ai-primary">保存</button>
+      <button id="aiClearBtn" class="ai-ghost">清除本机密钥</button>
+    </div>
+  </div>
+
+  <div id="aiMessages" class="ai-msgs"></div>
+
+  <div class="ai-input-row">
+    <textarea id="aiInput" rows="2" placeholder="问一个会计处理问题，如：哪些交易需要提交股东会审议？"></textarea>
+    <button id="aiSendBtn" class="ai-primary">发送</button>
+  </div>
+  <div class="ai-disclaimer">AI 回答仅供工作参考，正式依据请以官方文件原文为准。</div>
+</div>
+
+<script src="data.js"></script>
+<script src="minisearch.js"></script>
+<script src="script.js"></script>
+<script src="ai.js"></script>
+</body>
+</html>
